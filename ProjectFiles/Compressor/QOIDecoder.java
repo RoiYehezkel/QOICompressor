@@ -1,4 +1,4 @@
-package Compressor;
+package ProjectFiles.Compressor;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -19,10 +19,7 @@ public class QOIDecoder extends QOICompressor {
 			File file_in = new File(path);
 			FileInputStream input = new FileInputStream(file_in);
 			ObjectInputStream readFile = new ObjectInputStream(input);
-			this.width = readFile.readInt();
-			this.height = readFile.readInt();
-			this.pixels = new int[width * height];
-			this.channels = readFile.readByte();
+			readDataOfImage(readFile);
 			int index = 0;
 			while (true) {
 				int x = readFile.read();
@@ -39,7 +36,7 @@ public class QOIDecoder extends QOICompressor {
 							else if (key == QOI_OP_INDEX)
 								index = decodeByIndex(index, data);
 							else if (key == QOI_OP_DIFF)
-								index = decodeByDiffOneByte(index, data, readFile);
+								index = decodeByDiffOneByte(index, data);
 							else if (key == QOI_OP_LUMA)
 								index = decodeByDiffTwoBytes(index, data, readFile);
 							else
@@ -59,9 +56,8 @@ public class QOIDecoder extends QOICompressor {
 								throw new QOIHeaderException("the header isn't exist");
 						}
 					}
-				} else {
+				} else
 					break;
-				}
 			}
 			BufferedImage pixelImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 			pixelImage.setRGB(0, 0, width, height, pixels, 0, width);
@@ -75,6 +71,13 @@ public class QOIDecoder extends QOICompressor {
 		} catch (QOIHeaderException e) {
 			System.err.println(e.getMessage());
 		}
+	}
+
+	private void readDataOfImage(ObjectInputStream in) throws IOException {
+		this.width = in.readInt();
+		this.height = in.readInt();
+		this.pixels = new int[width * height];
+		this.channels = in.readByte();
 	}
 
 	private int decodeByPixel(int index, ObjectInputStream in) throws IOException {
@@ -93,7 +96,7 @@ public class QOIDecoder extends QOICompressor {
 
 	private int decodeByRun(int index, int count) {
 		int pixel = this.pixels[index - 1];
-		for (int i = index; i < index + count ; i++) {
+		for (int i = index; i < index + count; i++) {
 			pixels[i] = pixel;
 		}
 		return index + count;
@@ -105,7 +108,7 @@ public class QOIDecoder extends QOICompressor {
 		return index;
 	}
 
-	private int decodeByDiffOneByte(int index, int diff, ObjectInputStream in) throws IOException {
+	private int decodeByDiffOneByte(int index, int diff) {
 		int diffR = ((diff & 0x30) >> 4) - 2; // 00110000
 		int diffG = ((diff & 0x0c) >> 2) - 2; // 00001100
 		int diffB = (diff & 0x03) - 2; // 00000011

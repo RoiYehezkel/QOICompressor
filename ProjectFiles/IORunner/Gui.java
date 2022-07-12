@@ -1,7 +1,10 @@
-package IORunner;
+package ProjectFiles.IORunner;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
+import ProjectFiles.Compressor.QOIDecoder;
+import ProjectFiles.Compressor.QOIEncoder;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -15,14 +18,14 @@ public class Gui extends JFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 
-//	private JFrame frame;
+	// variables
 	final String DEFAULT_TEXT = "QOI Compressor by Roi Yehezkel & Sofia Naer.";
+	private String path;
+	private String destination;
+	private String name_of_file;
+	private boolean file_to_compress, file_to_decompress;
 
-	private String path = null;
-	private String destination = null;
-	private String name_of_file = null;
-	private boolean file_selected;
-
+	// labels for the gui
 	private JLabel background;
 	private JButton compress = new JButton("Compress");
 	private JButton decompress = new JButton("Decompress");
@@ -32,19 +35,19 @@ public class Gui extends JFrame {
 	private JTextField save_text = new JTextField();
 	private JLabel console = new JLabel(DEFAULT_TEXT);
 
+	// width and height of the form
 	final int WIDTH = 800;
 	final int HEIGHT = 450;
 
+	// position for compress and decompress buttons
 	final int COM_BTN_POSX = 250;
-	final int COM_BTN_POSY = 280;
-	final int COM_BTN_WIDTH = 120;
-	final int COM_BTN_HEIGHT = 30;
-
 	final int DECOM_BTN_POSX = 430;
-	final int DECOM_BTN_POSY = 280;
-	final int DECOM_BTN_WIDTH = 120;
-	final int DECOM_BTN_HEIGHT = 30;
 
+	final int COM_DECOM_BTN_POSY = 280;
+	final int COM_DECOM_BTN_WIDTH = 120;
+	final int COM_DECOM_BTN_HEIGHT = 30;
+
+	// position for the upload button and upload field
 	final int UPLOAD_BTN_POSX = 480;
 	final int UPLOAD_BTN_POSY = 130;
 	final int UPLOAD_BTN_WIDTH = 100;
@@ -55,6 +58,7 @@ public class Gui extends JFrame {
 	final int UPLOAD_TEXT_WIDTH = 250;
 	final int UPLOAD_TEXT_HEIGHT = 25;
 
+	// position for the save button and save field
 	final int SAVE_BTN_POSX = 480;
 	final int SAVE_BTN_POSY = 190;
 	final int SAVE_BTN_WIDTH = 100;
@@ -65,25 +69,40 @@ public class Gui extends JFrame {
 	final int SAVE_TEXT_WIDTH = 250;
 	final int SAVE_TEXT_HEIGHT = 25;
 
+	// position for the console
 	final int CONSOLE_POSX = 250;
 	final int CONSOLE_POSY = 373;
 	final int CONSOLE_WIDTH = 500;
 	final int CONSOLE_HEIGHT = 50;
 
-	public Gui(String header) {
-		background = new JLabel(new ImageIcon("koi.jpg"));
+	public Gui() {
+		background = new JLabel(new ImageIcon(Gui.class.getResource("/ProjectFiles/background.png")));
 		background.setLayout(null);
 		background.setSize(WIDTH, HEIGHT);
-		setLabels();
+		initialSetting();// initial setting for the variables
+		setLabels(); // adding labels to the background image
 		add(background);
 		setSize(WIDTH, HEIGHT + 30);
+		setTitle("QOICompressor");
+		setResizable(false);
 		setLayout(null);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
 		setVisible(true);
 	}
 
-	public void setLabels() {
+	private void initialSetting() {
+		path = null;
+		destination = null;
+		name_of_file = null;
+		file_to_compress = false;
+		file_to_decompress = false;
+		upload_text.setText("");
+		save_text.setText("");
+	}
+
+	private void setLabels() {
+		// remove layout
 		compress.setLayout(null);
 		decompress.setLayout(null);
 		upload_file.setLayout(null);
@@ -92,34 +111,47 @@ public class Gui extends JFrame {
 		save_text.setLayout(null);
 		console.setLayout(null);
 
-		compress.setBounds(COM_BTN_POSX, COM_BTN_POSY, COM_BTN_WIDTH, COM_BTN_HEIGHT);
-		decompress.setBounds(DECOM_BTN_POSX, DECOM_BTN_POSY, DECOM_BTN_WIDTH, DECOM_BTN_HEIGHT);
+		// setting the position and the size if the labels
+		compress.setBounds(COM_BTN_POSX, COM_DECOM_BTN_POSY, COM_DECOM_BTN_WIDTH, COM_DECOM_BTN_HEIGHT);
+		decompress.setBounds(DECOM_BTN_POSX, COM_DECOM_BTN_POSY, COM_DECOM_BTN_WIDTH, COM_DECOM_BTN_HEIGHT);
 		upload_file.setBounds(UPLOAD_BTN_POSX, UPLOAD_BTN_POSY, UPLOAD_BTN_WIDTH, UPLOAD_BTN_HEIGHT);
 		upload_text.setBounds(UPLOAD_TEXT_POSX, UPLOAD_TEXT_POSY, UPLOAD_TEXT_WIDTH, UPLOAD_TEXT_HEIGHT);
 		save_file.setBounds(SAVE_BTN_POSX, SAVE_BTN_POSY, SAVE_BTN_WIDTH, SAVE_BTN_HEIGHT);
 		save_text.setBounds(SAVE_TEXT_POSX, SAVE_TEXT_POSY, SAVE_TEXT_WIDTH, SAVE_TEXT_HEIGHT);
 		console.setBounds(CONSOLE_POSX, CONSOLE_POSY, CONSOLE_WIDTH, CONSOLE_HEIGHT);
 
+		// compress button action
 		compress.setFocusable(false);
 		compress.addActionListener((new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null, "click");
-
+				if (file_to_compress) {
+					new QOIEncoder(path, destination).encode();
+					console.setText("File has encoded");
+					initialSetting();
+				} else {
+					console.setText("Only bmp format supported");
+				}
 			}
 		}));
 
+		// decompress button action
 		decompress.setFocusable(false);
 		decompress.addActionListener((new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null, "click");
-
+				if (file_to_decompress) {
+					new QOIDecoder(path, destination).decode();
+					console.setText("File has decoded");
+					initialSetting();
+				} else {
+					console.setText("Only qoi format supported");
+				}
 			}
-
 		}));
-
+ 
+		// upload file button action
 		upload_file.setFocusable(false);
 		upload_file.addActionListener((new ActionListener() {
 			@Override
@@ -137,12 +169,11 @@ public class Gui extends JFrame {
 					upload_text.setText(file_upload.getSelectedFile().getAbsolutePath());
 					destination = file_upload.getCurrentDirectory().getAbsolutePath();
 					getFile();
-
 				}
-
 			}
 		}));
 
+		// save file button action
 		save_file.setFocusable(false);
 		save_file.setEnabled(false);
 		save_file.addActionListener((new ActionListener() {
@@ -162,11 +193,14 @@ public class Gui extends JFrame {
 			}
 		}));
 
+		// fields settings
 		upload_text.setEditable(false);
 		save_text.setEditable(false);
 
+		// console settings
 		console.setForeground(Color.white);
 
+		// adding label to background image
 		background.add(compress);
 		background.add(decompress);
 		background.add(upload_file);
@@ -177,20 +211,28 @@ public class Gui extends JFrame {
 	}
 
 	private void getFile() {
+		// bmp format received
 		if (name_of_file.substring(name_of_file.length() - 3).equals("bmp")) {
 			destination += "\\" + name_of_file.substring(0, name_of_file.length() - 3) + "qoi";
 			save_text.setText(destination);
 			console.setText(DEFAULT_TEXT);
 			save_file.setEnabled(true);
-		} else if (name_of_file.substring(name_of_file.length() - 3).equals("qoi")) {
+			file_to_compress = true;
+		} 
+		// qoi format received
+		else if (name_of_file.substring(name_of_file.length() - 3).equals("qoi")) {
 			destination += "\\" + name_of_file.substring(0, name_of_file.length() - 3) + "bmp";
 			save_text.setText(destination);
 			console.setText(DEFAULT_TEXT);
 			save_file.setEnabled(true);
-		} else {
+			file_to_decompress = true;
+		} 
+		// unsupported format received
+		else {
 			console.setText("Unsupported format");
 			save_text.setText("");
 			save_file.setEnabled(false);
+			initialSetting();
 		}
 	}
 }

@@ -1,4 +1,4 @@
-package Compressor;
+package ProjectFiles.Compressor;
 
 public abstract class QOICompressor {
 	final int QOI_OP_INDEX = 0x00; // 00xxxxxx

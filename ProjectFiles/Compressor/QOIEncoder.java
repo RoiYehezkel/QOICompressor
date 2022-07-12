@@ -1,4 +1,4 @@
-package Compressor;
+package ProjectFiles.Compressor;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -17,37 +17,28 @@ public class QOIEncoder extends QOICompressor {
 			BufferedImage image = ImageIO.read(new File(this.path));
 			FileOutputStream output = new FileOutputStream(this.destination);
 			ObjectOutputStream save = new ObjectOutputStream(output);
-			this.width = image.getWidth();
-			this.height = image.getHeight();
-			this.pixels = new int[width * height];
-			image.getRGB(0, 0, width, height, pixels, 0, width);
-			this.channels = isAlpha(pixels);
-			save.writeInt(width);
-			save.writeInt(height);
-			save.writeByte(channels);
-			writePixel(save, 0);
+			readDataFromImage(image, save);
+			encodePixel(save, 0);
 			int count = 0;
 			for (int i = 1; i < pixels.length; i++) {
 				if (pixels[i] == pixels[i - 1] && count < 62) {
 					count++;
 					continue;
 				} else if (count != 0) {
-					int runLength = QOI_OP_RUN | (count - 1);
-					save.write(runLength);
+					encodeByRun(save, count);
 					count = 0;
 				}
-				if (searchByIndex(i) != -1) {
-					int index = QOI_OP_INDEX | searchByIndex(i);
-					save.write(index);
-				} else if (channels == 3) {
+				if (searchByIndex(i) != -1)
+					encodeByIndex(save, i);
+				else if (channels == 3) {
 					if (differenceOneByte(pixels[i], pixels[i - 1]))
-						writeDiffOneByte(save, pixels[i], pixels[i - 1]);
+						encodeDiffOneByte(save, pixels[i], pixels[i - 1]);
 					else if (differenceTwoBytes(pixels[i], pixels[i - 1]))
-						writeDiffTwoBytes(save, pixels[i], pixels[i - 1]);
+						encodeDiffTwoBytes(save, pixels[i], pixels[i - 1]);
 					else
-						writePixel(save, i);
+						encodePixel(save, i);
 				} else
-					writePixel(save, i);
+					encodePixel(save, i);
 			}
 			if (count != 0) {
 				int runLength = QOI_OP_RUN | (count - 1);
@@ -59,7 +50,17 @@ public class QOIEncoder extends QOICompressor {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
 
+	private void readDataFromImage(BufferedImage image, ObjectOutputStream out) throws IOException {
+		this.width = image.getWidth();
+		this.height = image.getHeight();
+		this.pixels = new int[width * height];
+		image.getRGB(0, 0, width, height, pixels, 0, width);
+		this.channels = isAlpha(pixels);
+		out.writeInt(width);
+		out.writeInt(height);
+		out.writeByte(channels);
 	}
 
 	private byte isAlpha(int[] pixels) {
@@ -68,21 +69,6 @@ public class QOIEncoder extends QOICompressor {
 			if ((pixels[i] & 0xff000000) != num)
 				return 4;
 		return 3;
-	}
-
-	private void writePixel(ObjectOutputStream out, int index) throws IOException {
-		if (this.channels == 4) {
-			out.writeByte(QOI_OP_RGBA);
-			out.writeInt(pixels[index]);
-		} else {
-			int r = (pixels[index] & 0x00ff0000) >> 16;
-			int g = (pixels[index] & 0x0000ff00) >> 8;
-			int b = (pixels[index] & 0x000000ff);
-			out.writeByte(QOI_OP_RGB);
-			out.writeByte(r);
-			out.writeByte(g);
-			out.writeByte(b);
-		}
 	}
 
 	private int searchByIndex(int index) {
@@ -112,7 +98,32 @@ public class QOIEncoder extends QOICompressor {
 		return false;
 	}
 
-	private void writeDiffOneByte(ObjectOutputStream out, int pixel, int prevPixel) throws IOException {
+	private void encodePixel(ObjectOutputStream out, int index) throws IOException {
+		if (this.channels == 4) {
+			out.writeByte(QOI_OP_RGBA);
+			out.writeInt(pixels[index]);
+		} else {
+			int r = (pixels[index] & 0x00ff0000) >> 16;
+			int g = (pixels[index] & 0x0000ff00) >> 8;
+			int b = (pixels[index] & 0x000000ff);
+			out.writeByte(QOI_OP_RGB);
+			out.writeByte(r);
+			out.writeByte(g);
+			out.writeByte(b);
+		}
+	}
+
+	private void encodeByRun(ObjectOutputStream out, int count) throws IOException {
+		int runLength = QOI_OP_RUN | (count - 1);
+		out.write(runLength);
+	}
+
+	private void encodeByIndex(ObjectOutputStream out, int index) throws IOException {
+		int byIndex = QOI_OP_INDEX | searchByIndex(index);
+		out.write(byIndex);
+	}
+
+	private void encodeDiffOneByte(ObjectOutputStream out, int pixel, int prevPixel) throws IOException {
 		int diffR = ((pixel & 0x00ff0000) >> 16) - ((prevPixel & 0x00ff0000) >> 16);
 		int diffG = ((pixel & 0x0000ff00) >> 8) - ((prevPixel & 0x0000ff00) >> 8);
 		int diffB = ((pixel & 0x000000ff)) - ((prevPixel & 0x000000ff));
@@ -120,7 +131,7 @@ public class QOIEncoder extends QOICompressor {
 		out.write(diff);
 	}
 
-	private void writeDiffTwoBytes(ObjectOutputStream out, int pixel, int prevPixel) throws IOException {
+	private void encodeDiffTwoBytes(ObjectOutputStream out, int pixel, int prevPixel) throws IOException {
 		int diffR = ((pixel & 0x00ff0000) >> 16) - ((prevPixel & 0x00ff0000) >> 16);
 		int diffG = ((pixel & 0x0000ff00) >> 8) - ((prevPixel & 0x0000ff00) >> 8);
 		int diffB = ((pixel & 0x000000ff)) - ((prevPixel & 0x000000ff));

@@ -1,6 +1,11 @@
-package Compressor;
+package ProjectFiles.Compressor;
 
 public class QOIHeaderException extends Exception {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public QOIHeaderException() {
 		super();
 	}
