@@ -99,6 +99,7 @@ public class Gui extends JFrame {
 		file_to_decompress = false;
 		upload_text.setText("");
 		save_text.setText("");
+		save_file.setEnabled(false);
 	}
 
 	private void setLabels() {
@@ -175,7 +176,7 @@ public class Gui extends JFrame {
 
 		// save file button action
 		save_file.setFocusable(false);
-		save_file.setEnabled(false);
+//		save_file.setEnabled(false);
 		save_file.addActionListener((new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
