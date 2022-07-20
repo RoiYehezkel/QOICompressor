@@ -1,5 +1,5 @@
 # QOI Format Compression
-An QOI Compression & Decompression for bitmap images project with GUI in Java.
+An QOI Compression & Decompression for bitmap images, project with GUI in Java.
 
 # Install & Use:
 Download QOICompressor.jar and run it (you might need to install Java runtime enviorment).
