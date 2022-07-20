@@ -5,13 +5,11 @@ QOI — the Quite OK Image Format. It losslessly compresses RGB and RGBA images 
 
 # Technical Details:
 QOI encodes and decodes images in a single pass. It touches every pixel just once.
-
-Pixels are encoded as
-
-a run of the previous pixel
-an index into an array of previously seen pixels
-a difference to the previous pixel value in r,g,b
-full r,g,b or r,g,b,a values
+Pixels are encoded as:
+- a run of the previous pixel.
+- an index into an array of previously seen pixels.
+- a difference to the previous pixel value in r,g,b.
+- full r,g,b or r,g,b,a values.
 The resulting values are packed into chunks starting with a 2- or 8-bit tag (indicating one of those methods) followed by a number of data bits. All of these chunks (tag and data bits) are byte aligned, so there's no bit twiddling needed between those chunks.
 
 # Install & Use:
