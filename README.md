@@ -1,5 +1,5 @@
 # QOICompressor
-LZW-Compression-Project
+# LZW-Compression-Project
 An LZW Compression & Decompression project with GUI in Java.
 
 Install & Use:
