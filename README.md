@@ -3,6 +3,7 @@ QOI — the Quite OK Image Format. It losslessly compresses RGB and RGBA images 
 
 # Technical Details:
 QOI encodes and decodes images in a single pass. It touches every pixel just once.
+<br/>
 Pixels are encoded as:
 - a run of the previous pixel.
 - an index into an array of previously seen pixels.
