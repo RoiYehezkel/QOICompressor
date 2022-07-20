@@ -1,4 +1,4 @@
-<img width="138" alt="image" src="https://user-images.githubusercontent.com/88332335/179968599-d7d58e33-fbfd-43de-82b9-477c656511df.png">
+<img width="300" alt="image" src="https://user-images.githubusercontent.com/88332335/179968599-d7d58e33-fbfd-43de-82b9-477c656511df.png">
 # QOI - The “Quite OK Image Format” for fast, lossless image compression
 QOI — the Quite OK Image Format. It losslessly compresses RGB and RGBA images to a similar size of PNG, while offering a 20x-50x speedup in compression and 3x-4x speedup in decompression.
 
