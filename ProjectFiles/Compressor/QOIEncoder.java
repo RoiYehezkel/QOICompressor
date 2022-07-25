@@ -1,4 +1,9 @@
 package ProjectFiles.Compressor;
+/**
+ * Submitted by: 
+ * Student 1: Sofia Naer 	ID# 333815397
+ * Student 2: Roi Yehezkel 	ID# 315331959
+ */
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -80,7 +85,7 @@ public class QOIEncoder extends QOICompressor {
 
 	// check if the image is RGB or RGBA
 	private byte isAlpha(int[] pixels) {
-		int num = pixels[0] & 0xff000000;
+		int num = 0xff000000;
 		for (int i = 0; i < pixels.length; i++)
 			if ((pixels[i] & 0xff000000) != num)
 				return 4;

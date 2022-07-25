@@ -1,5 +1,11 @@
 package ProjectFiles.IORunner;
 
+/**
+ * Submitted by: 
+ * Student 1: Sofia Naer 	ID# 333815397
+ * Student 2: Roi Yehezkel 	ID# 315331959
+ */
+
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -151,7 +157,7 @@ public class Gui extends JFrame {
 				}
 			}
 		}));
- 
+
 		// upload file button action
 		upload_file.setFocusable(false);
 		upload_file.addActionListener((new ActionListener() {
@@ -219,7 +225,7 @@ public class Gui extends JFrame {
 			console.setText(DEFAULT_TEXT);
 			save_file.setEnabled(true);
 			file_to_compress = true;
-		} 
+		}
 		// qoi format received
 		else if (name_of_file.substring(name_of_file.length() - 3).equals("qoi")) {
 			destination += "\\" + name_of_file.substring(0, name_of_file.length() - 3) + "bmp";
@@ -227,7 +233,7 @@ public class Gui extends JFrame {
 			console.setText(DEFAULT_TEXT);
 			save_file.setEnabled(true);
 			file_to_decompress = true;
-		} 
+		}
 		// unsupported format received
 		else {
 			console.setText("Unsupported format");

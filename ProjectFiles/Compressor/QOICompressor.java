@@ -1,4 +1,9 @@
 package ProjectFiles.Compressor;
+/**
+ * Submitted by: 
+ * Student 1: Sofia Naer 	ID# 333815397
+ * Student 2: Roi Yehezkel 	ID# 315331959
+ */
 
 public abstract class QOICompressor {
 	// final keys for the different type of encoding
